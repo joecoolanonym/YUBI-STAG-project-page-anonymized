@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101210" media="(prefers-color-scheme: dark)">
+  <title>YUBI-STAG</title>
+  <meta name="description" content="YUBI-STAG: Contact and Semantic-Rich Alignment for VLAs via Automated Video-Language Grounding">
+  <style>
+    /* ---- Palette --------------------------------------------------------
+       Text is neutral black/white. Color is reserved for the title wordmark
+       (YUBI #ED2E40 / STAG #A66851) and for structural accents drawn from
+       the Adobe Color "STAG" palette:
+       #4F7355 sage  #405944 forest  #347338 green  #A66851 clay  #D9A38F blush
+       -------------------------------------------------------------------- */
+    :root {
+      color-scheme: light dark;
+      --sage:   #4F7355;
+      --forest: #405944;
+      --green:  #347338;
+      --clay:   #A66851;
+      --blush:  #D9A38F;
+      --yubi:   #ED2E40;
+
+      --bg: #ffffff;
+      --surface: #f4f6f3;
+      --surface-alt: #fbf2ee;
+      --fg: #1a1a1a;
+      --muted: #5c5c5c;
+      --border: #e0e3df;
+      --rule: #ececec;
+      --img-bg: #ffffff;
+      --section-gap: 104px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101210;
+        --surface: #1a1f1b;
+        --surface-alt: #241a16;
+        --fg: #e9eae8;
+        --muted: #a0a3a0;
+        --border: #2c322d;
+        --rule: #262826;
+      }
+    }
+    @media (max-width: 640px) {
+      :root { --section-gap: 68px; }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+    }
+    ::selection { background: var(--blush); color: #1a1a1a; }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 56px 16px 80px;
+    }
+
+    /* ---- Header -------------------------------------------------------- */
+    header { text-align: center; margin-bottom: 40px; }
+    h1 {
+      font-size: clamp(1.7rem, 4.2vw, 2.5rem);
+      line-height: 1.25;
+      margin: 0 0 12px;
+      letter-spacing: -0.01em;
+    }
+    h1.logo { line-height: 0; margin-bottom: 20px; }
+    h1.logo img {
+      display: block;
+      width: min(100%, 420px);
+      height: auto;
+      margin: 0 auto;
+    }
+    .subtitle {
+      font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+      font-weight: 500;
+      margin: 0 0 18px;
+    }
+    .title-rule {
+      width: 104px;
+      height: 3px;
+      margin: 0 auto 18px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--clay), var(--blush));
+    }
+    .authors { color: var(--muted); margin: 0; }
+    .venue { color: var(--muted); font-size: 0.95rem; margin: 4px 0 0; }
+
+    /* ---- Sections ------------------------------------------------------ */
+    section { margin-top: var(--section-gap); }
+    h2 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin: 0 0 6px;
+    }
+    h2::after {
+      content: "";
+      display: block;
+      width: 48px;
+      height: 2px;
+      margin: 10px auto 0;
+      border-radius: 2px;
+      background: var(--sage);
+    }
+    h2 + .lead {
+      color: var(--muted);
+      text-align: center;
+      margin: 14px auto 24px;
+      max-width: 720px;
+    }
+    h3 { font-size: 1.05rem; margin: 28px 0 6px; }
+    p { margin: 0 0 1em; }
+    figure + p, .table-wrap + p { margin-top: 24px; }
+    .abstract p { text-align: justify; }
+
+    /* ---- Figures ------------------------------------------------------- */
+    /* Width mirrors the paper: \textwidth figures run full bleed, while
+       \columnwidth ones stay narrow instead of being blown up. */
+    figure { margin: 32px auto 0; }
+    figure.narrow { max-width: 640px; }
+    figure.narrow-sm { max-width: 560px; }
+    figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--img-bg);
+    }
+    figcaption {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 12px;
+      padding-left: 12px;
+      border-left: 2px solid var(--rule);
+    }
+    figcaption strong { color: var(--fg); }
+
+    /* ---- Video ---------------------------------------------------------- */
+    video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #000;
+    }
+    .videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px 18px;
+      margin-top: 22px;
+    }
+    .videos figure { margin: 0; max-width: none; }
+    .videos figcaption { font-size: 0.9rem; margin-top: 10px; }
+    figcaption .instr { font-style: italic; }
+    .sublabel {
+      margin: 26px 0 0;
+      font-weight: 600;
+      font-size: 0.98rem;
+    }
+
+    /* ---- Carousel ------------------------------------------------------- */
+    .carousel { margin: 32px 0 0; max-width: none; }
+    .carousel:focus-visible {
+      outline: 2px solid var(--clay);
+      outline-offset: 6px;
+      border-radius: 10px;
+    }
+    .carousel-head {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .carousel-count {
+      flex: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+    .carousel-task { font-weight: 600; }
+    .carousel-stage { position: relative; }
+    .carousel-track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .carousel-track::-webkit-scrollbar { display: none; }
+    .carousel-slide { flex: 0 0 100%; scroll-snap-align: start; }
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 40px;
+      height: 40px;
+      padding: 0 0 3px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 50%;
+      /* always a light chip: these buttons sit on top of dark video frames */
+      background: rgba(255, 255, 255, 0.92);
+      color: #1a1a1a;
+      font: 600 1.5rem/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+    }
+    .carousel-nav:hover { background: #fff; color: var(--clay); }
+    .carousel-nav.prev { left: 12px; }
+    .carousel-nav.next { right: 12px; }
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+      margin-top: 14px;
+    }
+    .carousel-dots button {
+      width: 9px;
+      height: 9px;
+      padding: 0;
+      border: 1px solid var(--muted);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+    }
+    .carousel-dots button:hover { border-color: var(--clay); }
+    .carousel-dots button.is-active { background: var(--clay); border-color: var(--clay); }
+    .carousel figcaption { margin-top: 16px; }
+    @media (max-width: 640px) {
+      .carousel-nav { width: 34px; height: 34px; font-size: 1.25rem; }
+      .carousel-nav.prev { left: 8px; }
+      .carousel-nav.next { right: 8px; }
+    }
+
+    /* ---- Cards & stats ------------------------------------------------- */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--sage);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .card h3 { margin: 0 0 6px; }
+    .card p { margin: 0; font-size: 0.95rem; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+      margin: 20px 0 8px;
+      text-align: center;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 10px;
+    }
+    .stat b { display: block; font-size: 1.35rem; line-height: 1.3; }
+    .stat span { color: var(--muted); font-size: 0.85rem; }
+
+    /* ---- Tables -------------------------------------------------------- */
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 24px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 0.9rem;
+      min-width: 700px;
+    }
+    caption {
+      caption-side: bottom;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: left;
+      line-height: 1.5;
+      padding: 12px 14px 2px;
+    }
+    caption strong { color: var(--fg); }
+    th, td {
+      border-bottom: 1px solid var(--rule);
+      padding: 7px 9px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    th:first-child, td:first-child { text-align: left; padding-left: 14px; }
+    th:last-child, td:last-child { padding-right: 14px; }
+    thead th {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    thead th .metric {
+      display: block;
+      font-weight: 400;
+      font-size: 0.82em;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    thead th.grp {
+      text-align: center;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 4px;
+      white-space: normal;
+      line-height: 1.25;
+    }
+    thead tr:first-child th[rowspan] { vertical-align: bottom; }
+    thead th.sub {
+      padding-top: 4px;
+      font-weight: 500;
+      font-size: 0.92em;
+      color: var(--muted);
+      white-space: normal;
+      line-height: 1.25;
+    }
+    /* benchmark table: denser cells + vertical rules between task groups */
+    table.bench { font-size: 0.86rem; min-width: 880px; }
+    table.bench th.gsep,
+    table.bench tbody td:nth-child(3),
+    table.bench tbody td:nth-child(4),
+    table.bench tbody td:nth-child(6),
+    table.bench tbody td:nth-child(8),
+    table.bench tbody td:nth-child(9),
+    table.bench tbody td:nth-child(11) { border-left: 1px solid var(--rule); }
+    table.bench tbody tr.group td { border-left: none; }
+    .given {
+      display: inline-block;
+      font-size: 0.8em;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0 5px;
+      margin-left: 6px;
+      vertical-align: 1px;
+      white-space: nowrap;
+    }
+    tbody tr.ours { background: var(--surface-alt); }
+    tbody td.best { font-weight: 700; }
+    .group td {
+      color: var(--muted);
+      font-style: italic;
+      background: transparent;
+      border-bottom: none;
+      padding-top: 14px;
+      padding-bottom: 2px;
+      white-space: normal;
+    }
+
+    /* ---- Footer -------------------------------------------------------- */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 22px 16px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1 class="logo"><img src="static/images/YUBI-STAG_logo.svg" alt="YUBI-STAG" width="330" height="91"></h1>
+      <p class="subtitle">Contact and Semantic-Rich Alignment for VLAs<br>via Automated Video-Language Grounding</p>
+      <div class="title-rule"></div>
+      <p class="authors">Anonymous Authors</p>
+      <p class="venue">Under double-anonymous review</p>
+    </header>
+
+    <figure class="narrow">
+      <img src="static/images/teaser.jpg" alt="From coarse demonstration labels to contact-anchored annotations and an aligned VLA" width="2210" height="1217">
+      <figcaption>
+        From a bimanual demonstration carrying only a coarse task label such as &ldquo;pick and place a part,&rdquo;
+        YUBI-STAG recovers contact-anchored annotations of object identity, per-gripper action, bimanual
+        coordination, and object change, which post-training uses to align the pretrained capabilities of a VLA
+        with fine-grained manipulation language.
+      </figcaption>
+    </figure>
+
+    <section class="abstract">
+      <h2>Abstract</h2>
+      <p>
+        Vision-Language-Action (VLA) models acquire broad manipulation capabilities via large-scale pretraining, yet eliciting them through language requires fine-grained alignment between instructions and physical interactions. Existing robot demonstrations, however, typically provide only coarse task descriptions, omitting how actions are executed, including which gripper acts, which object is contacted, and how it is grasped and moved.
+      </p>
+      <p>
+        We introduce <em>YUBI-STAG</em>, a framework that automatically enriches manipulation demonstrations with interaction-rich annotations for aligning pretrained VLAs with fine-grained manipulation language. Combining contact-object segmentation with vision-language models, YUBI-STAG annotates object identities, attributes and states, per-gripper actions, bimanual coordination, and spatially grounded interactions. To scale beyond this multi-stage pipeline, we distill it into <em>YUBI-VLM</em>, which directly annotates raw, unsegmented videos in few inference calls and operates from wrist views alone, enabling portable annotation without fixed external cameras. Alongside it, we introduce <em>YUBI-STAG-Bench</em> to comprehensively evaluate STAG annotation quality across temporal, semantic, and spatial grounding tasks, showing that YUBI-VLM generalizes these capabilities to unseen manipulations.
+      </p>
+      <p>
+        Finally, we use the resulting annotations to post-train YUBI-pretrained VLA policies, aligning their manipulation capabilities with fine-grained language and contact-aware interaction structure. Experiments on bimanual manipulation show improved manipulation performance and instruction following, including control over object identity, acting gripper, target location, and spatial relations absent from the original demonstration labels. Our results show that richly grounded interaction annotation provides a scalable way to better elicit pretrained VLA capabilities through language.
+      </p>
+    </section>
+
+    <section>
+      <h2>Contributions</h2>
+      <p class="lead">A demonstration shows <em>how</em> the task was executed, but its label records only <em>what</em> the task was. We recover the missing interaction structure, and use it to align the policy.</p>
+      <div class="cards">
+        <div class="card">
+          <h3>YUBI-STAG &amp; YUBI-VLM</h3>
+          <p>
+        Turns coarsely labeled bimanual demonstrations into grounded spatio-temporal annotations &mdash; plus a distilled model that produces them from raw, wrist-view-only video, with no action boundaries given.
+      </p>
+        </div>
+        <div class="card">
+          <h3>YUBI-STAG-Bench</h3>
+          <p>
+        Temporal segmentation, semantic state understanding, and spatial grounding on unseen bimanual manipulations &mdash; capabilities no existing manipulation-video or task-success benchmark measures.
+      </p>
+        </div>
+        <div class="card">
+          <h3>Contact- and semantic-rich post-training</h3>
+          <p>
+        Handedness, contact phases, and contact-aware sampling fed to a &pi;<sub>0.5</sub>-based policy, extending data-centric alignment from instruction text to physical interaction.
+      </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>YUBI-STAG pipeline</h2>
+      <p class="lead">Contact tracks anchor <em>when</em> and <em>where</em> each interaction happens, so a staged multimodal LLM can resolve the rest.</p>
+
+      <figure>
+        <img src="static/images/pipeline.jpg" alt="Overview of the YUBI-STAG pipeline" width="2400" height="959">
+        <figcaption>
+          <strong>Overview of YUBI-STAG.</strong>
+          The contact-object segmentation module extracts <em>contact tracks</em>&mdash;contact intervals with per-frame object masks&mdash;as spatio-temporal anchors for four annotation stages: scene configuration, PA stages and gripper coordination, object changes, and grounded PA descriptions.
+        </figcaption>
+      </figure>
+
+      <h3>(i) Contact-object segmentation</h3>
+      <p>
+        UMI and YUBI carry no tactile sensors, so contact is inferred visually. A frozen DINOv2-L encodes both wrist streams into a lightweight temporal transformer; per gripper, an MLP head predicts the contact state and a DPT-style decoder the contacted object&rsquo;s mask. Training scales on gripper-aperture pseudo-labels &mdash; SAM2 masks filtered by point-tracking co-motion and depth agreement &mdash; then self-training and a small set of precise human annotations.
+      </p>
+
+      <h3>(ii) Staged VLM annotation</h3>
+      <p>
+        Queries are split into four stages, each building on the last: <strong>(1) scene configuration</strong> &mdash; an inventory of objects with color, material, shape, size, and role under persistent IDs; <strong>(2) PA stages, per-gripper actions, and coordination</strong> &mdash; binding each contact track to an object ID and labeling one of seven coordination types (left/right-only, primary&ndash;supporting, either handover direction, bimanual); <strong>(3) object changes</strong> &mdash; source and destination relative to other objects, plus state, assembly, and containment; <strong>(4) unified grounded PA annotation</strong>, every object mention linked to its ID.
+      </p>
+
+      <figure class="carousel" tabindex="0" aria-roledescription="carousel" aria-label="YUBI-STAG annotation samples">
+        <p class="carousel-head">
+          <span class="carousel-count">1 / 3</span>
+          <span class="carousel-task">Clip carabiner onto carabiner</span>
+        </p>
+        <div class="carousel-stage">
+          <div class="carousel-track">
+            <div class="carousel-slide" data-task="Clip carabiner onto carabiner">
+              <video src="static/videos/stag_carabiner.mp4" poster="static/posters/stag_carabiner.jpg"
+                     controls muted loop playsinline preload="none"></video>
+            </div>
+            <div class="carousel-slide" data-task="Charge the phone with the power bank">
+              <video src="static/videos/stag_charge_phone.mp4" poster="static/posters/stag_charge_phone.jpg"
+                     controls muted loop playsinline preload="none"></video>
+            </div>
+            <div class="carousel-slide" data-task="Write &ldquo;ICRA&rdquo; on the whiteboard">
+              <video src="static/videos/stag_write_icra.mp4" poster="static/posters/stag_write_icra.jpg"
+                     controls muted loop playsinline preload="none"></video>
+            </div>
+          </div>
+          <button type="button" class="carousel-nav prev" aria-label="Previous sample">&#8249;</button>
+          <button type="button" class="carousel-nav next" aria-label="Next sample">&#8250;</button>
+        </div>
+        <div class="carousel-dots">
+          <button type="button" class="dot is-active" aria-label="Clip carabiner onto carabiner"></button>
+          <button type="button" class="dot" aria-label="Charge the phone with the power bank"></button>
+          <button type="button" class="dot" aria-label="Write &ldquo;ICRA&rdquo; on the whiteboard"></button>
+        </div>
+        <figcaption>
+          <strong>YUBI-STAG annotation on unseen bimanual episodes.</strong>
+          Overhead and wrist views with the contacted object outlined. For each primitive action the pipeline
+          recovers a grounded description, the acting gripper and coordination type, where the contacted object
+          came from, the object inventory with attributes and state, and the resulting assembly and containment.
+          The timeline colors every PA by its coordination type and marks state, containment, and assembly events.
+          Use the arrows or dots to switch between tasks.
+        </figcaption>
+      </figure>
+
+      <h3>YUBI-VLM: distilling the pipeline</h3>
+      <p>
+        Qwen3.6-27B with LoRA (489M trainable parameters, 1.76%) over ten prediction modes that reproduce YUBI-STAG. Contact masks are drawn as contours on the wrist frames and gripper and timing given as text, so grounding needs no extra mask encoder or visual tokens. Dropping the overhead view from half the samples enables wrist-only inference. Training uses 2,477 sessions from 129 long-horizon tasks (29.4 hours; 18,336 PA clips &rarr; 29,500 examples), with all ten benchmark tasks held out.
+      </p>
+    </section>
+
+    <section>
+      <h2>YUBI-STAG-Bench</h2>
+      <p class="lead">100 manually annotated episodes from 10 unseen tasks, covering contact-object grounding and structured semantic annotation.</p>
+
+      <div class="stats">
+        <div class="stat"><b>100</b><span>episodes (10 tasks)</span></div>
+        <div class="stat"><b>510</b><span>objects</span></div>
+        <div class="stat"><b>970</b><span>primitive actions</span></div>
+        <div class="stat"><b>2,201</b><span>interaction intervals</span></div>
+      </div>
+
+
+      <div class="table-wrap">
+        <table>
+          <caption><strong>Table I.</strong> Contact-object grounding on grasp intervals: <strong>grasp detection</strong> localizes each gripper&rsquo;s contact intervals in wrist video, and <strong>contact-object segmentation</strong> masks the contacted object at 10&nbsp;fps. e2e scores all ground-truth mask frames, counting uncovered frames as zero.</caption>
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th colspan="2" class="grp">Grasp detection</th>
+              <th colspan="2" class="grp">Contact-object segmentation</th>
+            </tr>
+            <tr>
+              <th class="sub">mIoU &uarr;</th><th class="sub">frame Acc. &uarr;</th>
+              <th class="sub">J (e2e) &uarr;</th><th class="sub">F (e2e) &uarr;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Aperture + SAM2</td><td>0.718</td><td>0.838</td><td>0.403</td><td>0.436</td></tr>
+            <tr class="ours"><td>Ours</td><td class="best">0.897</td><td class="best">0.945</td><td class="best">0.740</td><td class="best">0.751</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap">
+        <table class="bench">
+          <caption><strong>Table II (excerpt).</strong> Semantic annotation from video. <strong>Object ID</strong> identifies the manipulated objects and <strong>Attribute</strong> their shape and material; <strong>PA GEN TAS</strong> jointly predicts primitive-action descriptions and their intervals from unsegmented video; <strong>Coordination</strong> predicts the bimanual role; <strong>Location</strong> the containing and relative reference objects; <strong>State</strong> object states and their transition times. B-F1: boundary F1 at 0.5&nbsp;s; S-IoU: segment IoU; T-F1: transition F1 at 1.0&nbsp;s. Speed is video duration over wall-clock time on one eight-H200 node; scores in %. YUBI-VLM annotates raw, unsegmented video, whereas the multi-stage YUBI-STAG pipeline is given the ground-truth PA intervals as temporal scaffolds (<strong>+PA</strong>) and so does not run PA GEN TAS. The seventh task, <strong>TAS</strong>, localizes a given PA sequence and is omitted here. Bold: best among the rows shown.</caption>
+          <thead>
+            <tr>
+              <th rowspan="2">Method</th>
+              <th rowspan="2">Speed<span class="metric">&times; real&nbsp;time</span></th>
+              <th class="grp gsep">Object<br>ID</th>
+              <th colspan="2" class="grp gsep">Attribute</th>
+              <th colspan="2" class="grp gsep">PA GEN TAS</th>
+              <th class="grp gsep">Coordi-<br>nation</th>
+              <th colspan="2" class="grp gsep">Location</th>
+              <th colspan="2" class="grp gsep">State</th>
+            </tr>
+            <tr>
+              <th class="sub gsep">Acc.</th>
+              <th class="sub gsep">Shape</th><th class="sub">Material</th>
+              <th class="sub gsep">B-F1</th><th class="sub">S-IoU</th>
+              <th class="sub gsep">7-way</th>
+              <th class="sub gsep">Cont.</th><th class="sub">Rel.</th>
+              <th class="sub gsep">mIoU</th><th class="sub">T-F1</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group"><td colspan="12">Baseline: untrained backbone</td></tr>
+            <tr><td>Qwen3.6-27B</td><td>3.1&times;</td><td>91.5</td><td>58.0</td><td>89.6</td><td>14.9</td><td>41.3</td><td>44.3</td><td>43.5</td><td>22.9</td><td>37.9</td><td>11.9</td></tr>
+            <tr><td>Qwen3.6-27B w/o Top</td><td>3.5&times;</td><td>92.0</td><td>58.7</td><td>88.3</td><td>16.1</td><td>45.2</td><td>46.7</td><td>16.9</td><td>14.9</td><td>38.4</td><td>12.3</td></tr>
+            <tr class="group"><td colspan="12">Baseline: VLM fine-tuned on robot manipulation videos</td></tr>
+            <tr><td>RoboFine-VLM-397B</td><td>0.9&times;</td><td>85.0</td><td>60.8</td><td>87.2</td><td>15.6</td><td>31.8</td><td>50.6</td><td>51.3</td><td>33.5</td><td>43.0</td><td>15.1</td></tr>
+            <tr><td>RoboFine-VLM-397B w/o Top</td><td>1.2&times;</td><td>89.2</td><td>60.2</td><td>84.4</td><td>15.0</td><td>30.7</td><td>46.3</td><td>44.3</td><td>27.0</td><td>44.2</td><td>14.0</td></tr>
+            <tr class="group"><td colspan="12">Ours: distilled annotator &mdash; PAs predicted from raw video</td></tr>
+            <tr class="ours"><td>YUBI-VLM</td><td>3.5&times;</td><td class="best">95.2</td><td>66.4</td><td>83.7</td><td>77.9</td><td>78.4</td><td>51.2</td><td class="best">96.7</td><td class="best">63.9</td><td>52.0</td><td>43.5</td></tr>
+            <tr class="ours"><td>YUBI-VLM w/o Top</td><td class="best">3.9&times;</td><td>93.9</td><td>64.6</td><td>87.7</td><td class="best">78.2</td><td class="best">78.5</td><td>52.7</td><td>90.0</td><td>50.0</td><td>47.9</td><td>31.0</td></tr>
+            <tr class="group"><td colspan="12">Ours: multi-stage pipeline &mdash; ground-truth PA intervals given</td></tr>
+            <tr class="ours"><td>YUBI-STAG <span class="given">+PA</span></td><td>1.5&times;</td><td>94.2</td><td class="best">72.1</td><td class="best">92.1</td><td>&ndash;</td><td>&ndash;</td><td class="best">61.6</td><td>95.3</td><td>55.9</td><td class="best">76.0</td><td class="best">67.9</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Learned contact tracks beat the aperture proxy on both temporal detection and spatial grounding across all ten tasks. YUBI-VLM improves temporal, coordination, spatial, and state understanding over the untrained backbone while recovering PAs directly from raw video, and holds most of it from wrist views alone &mdash; relative location and state timing are what the top view buys. RoboFine-VLM, not trained for temporal localization, over-segments PAs. At 3.3&ndash;3.4k output tokens per episode against YUBI-STAG&rsquo;s 14.6k, the distilled annotator is both the fastest and the most accurate evaluated.
+      </p>
+    </section>
+
+    <section>
+      <h2>Contact- and semantic-rich post-training</h2>
+      <p class="lead">Observations, actions, architecture, and objective stay fixed &mdash; only the supervision changes.</p>
+
+      <figure>
+        <img src="static/images/vla_training.jpg" alt="Contact- and semantic-rich post-training for YUBI-VLA" width="2202" height="1084">
+        <figcaption>
+          <strong>Contact- and semantic-rich post-training for YUBI-VLA.</strong>
+          Left: YUBI-STAG augments primitive-action instructions with time-varying acting-hand and contact-phase labels while the unchanged flow-matching expert learns continuous bimanual actions.
+          Right: t-SNE projections of per-hand delta actions after PCA-50 reduction, colored by hand identity and contact phase, reveal semantic and temporal structure in the trajectories and motivate the proposed labels.
+        </figcaption>
+      </figure>
+
+      <p>
+        A &pi;<sub>0.5</sub>-based policy pretrained on the 8,434-hour YUBI corpus is post-trained on the same 10&ndash;20 hours under different STAG-derived supervision, so ablations differ only in the alignment signal. <strong>Semantic labels</strong> name the acting hand and interaction type (left, right, or either handover direction), updated over time with STAG stages. <strong>Contact-phase labels</strong> mark approach, grasp, hold, or release &mdash; grasp spanning &plusmn;0.2&nbsp;s around contact onset, release the last 0.2&nbsp;s. <strong>Contact-prioritized sampling</strong> rebalances chunks toward these sparse transitions: a grasp onset covering 5% of demonstrations can fill 30% of sampled chunks.
+      </p>
+    </section>
+
+    <section>
+      <h2>Robot experiments</h2>
+      <p class="lead">Bimanual Franka with the YUBI end-effector, 10&nbsp;Hz control, eight-step action chunks.</p>
+
+      <figure class="narrow-sm">
+        <img src="static/images/setup.jpg" alt="Experimental setup for the robot evaluation tasks" width="2199" height="1206">
+        <figcaption><strong>Experimental setup</strong> for the robot evaluation tasks: YUBI part sorting (top left), fuel-bracket bin picking (top right), sock sorting for language steerability (bottom left), and letter-block action composition (bottom right).</figcaption>
+      </figure>
+
+      <h3>Fine-grained manipulation</h3>
+      <figure class="narrow">
+        <img src="static/images/fine_manip.png" alt="Success rates on YUBI part sorting and fuel-bracket bin picking" width="2189" height="680">
+        <figcaption>
+          Fine-grained manipulation results over 20 trials per condition, with 95% Wilson score confidence intervals.
+          Full success completes both picking and placement; partial success indicates successful pick-up.
+        </figcaption>
+      </figure>
+      <p>
+        Neither coarse-label baseline completes either task &mdash; their actions are higher-variance, while fine-grained annotations give sharper, better-calibrated motions. On part sorting, semantic labels reach 25% full success and 100% pick-up; contact supervision lifts full success to 60%. On the harder fuel-bracket bin picking, 20% full success doubles to 40%, and pick-up rises from 35% to 55%.
+      </p>
+
+      <div class="videos">
+          <figure>
+            <video src="static/videos/part_sorting.mp4" poster="static/posters/part_sorting.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><strong>YUBI part sorting.</strong> Pick a specified YUBI finger part and place it in a designated bin cell.</figcaption>
+          </figure>
+          <figure>
+            <video src="static/videos/fuel_bracket.mp4" poster="static/posters/fuel_bracket.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><strong>Fuel-bracket bin picking.</strong> Pick one of five industrial parts from a source box and transfer it to a target box.</figcaption>
+          </figure>
+      </div>
+
+      <h3>Fine-grained language steerability</h3>
+      <figure class="narrow">
+        <img src="static/images/language_steerability.png" alt="Language steerability results: attribute, relational placement, and ordinal selection" width="2199" height="1222">
+        <figcaption>
+          Baseline (blue) and YUBI-STAG (orange) success rates with 95% Wilson confidence intervals.
+          P&amp;P in (3) does not measure instruction following, because any sock may be grasped.
+        </figcaption>
+      </figure>
+      <p>
+        The original PAs for this six-sock, three-bin task say only &ldquo;randomly pick up socks and put it into the box.&rdquo; With STAG annotations the policy reaches 82.9% color accuracy against the baseline&rsquo;s 46.4% and follows the instructed gripper in every completed trial, while the baseline always acts with the right gripper despite balanced data. Under two unseen bin orders it holds up, whereas baseline target-bin accuracy falls from 100% to 53.3%. Relational placement (<em>left of</em>, <em>right of</em>, <em>between</em> a color-named reference): 50.0% versus 11.1%. Ordinal selection (&ldquo;second from the left&rdquo;): 41.7% exact versus 12.5%, with 91.7% within one position, while the baseline grabs the leftmost sock and scores worse than random.
+      </p>
+
+      <p class="sublabel">Color, gripper, and target bin</p>
+      <div class="videos">
+          <figure>
+            <video src="static/videos/socks_attribute_1.mp4" poster="static/posters/socks_attribute_1.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the green socks and put it into the center bin using right arm.&rdquo;</span></figcaption>
+          </figure>
+          <figure>
+            <video src="static/videos/socks_attribute_2.mp4" poster="static/posters/socks_attribute_2.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the purple socks and put it into the right bin using left arm.&rdquo;</span></figcaption>
+          </figure>
+      </div>
+
+      <p class="sublabel">Relational placement</p>
+      <div class="videos">
+          <figure>
+            <video src="static/videos/socks_relation_1.mp4" poster="static/posters/socks_relation_1.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the purple socks in the bin and put it at the left of the red socks using the right arm.&rdquo;</span></figcaption>
+          </figure>
+          <figure>
+            <video src="static/videos/socks_relation_2.mp4" poster="static/posters/socks_relation_2.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the green socks in the bin and put it at the right of the purple socks using the right arm.&rdquo;</span></figcaption>
+          </figure>
+          <figure>
+            <video src="static/videos/socks_relation_3.mp4" poster="static/posters/socks_relation_3.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the orange socks in the bin and put it between the purple socks and the yellow socks using the left arm.&rdquo;</span></figcaption>
+          </figure>
+      </div>
+
+      <p class="sublabel">Ordinal selection</p>
+      <div class="videos">
+          <figure>
+            <video src="static/videos/socks_ordinal_1.mp4" poster="static/posters/socks_ordinal_1.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the socks at the third from the left and put it into the left bin using left arm.&rdquo;</span></figcaption>
+          </figure>
+          <figure>
+            <video src="static/videos/socks_ordinal_2.mp4" poster="static/posters/socks_ordinal_2.jpg"
+                   controls muted loop playsinline preload="none"></video>
+            <figcaption><span class="instr">&ldquo;Pick up the socks at the second from the right and put it into the left bin using right arm.&rdquo;</span></figcaption>
+          </figure>
+      </div>
+
+      <h3>Action composition from generated PAs</h3>
+      <figure class="narrow">
+        <img src="static/images/action_composition.png" alt="Letter-block action composition results on BED and BUS" width="2201" height="1011">
+        <figcaption>
+          Letter-block action composition on BED (in-distribution) and BUS (out-of-distribution).
+          Action metrics (<em>n</em>&nbsp;=&nbsp;20) are cumulative; task place and task complete require both actions to succeed through placement and orientation (<em>n</em>&nbsp;=&nbsp;10).
+        </figcaption>
+      </figure>
+      <p>
+        Conditioning each segment on its YUBI-VLM-generated PA improves the action funnel on BED &mdash; especially target selection and placement &mdash; and reaches task-level placement and completion the task-level baseline never does. The gains carry to the unseen BUS composition, so generated PAs capture reusable action semantics. Neither policy completes both BUS actions in one rollout: end-to-end composition is still limited by placement and orientation.
+      </p>
+
+      <figure class="narrow">
+        <video src="static/videos/letter_composition.mp4" poster="static/posters/letter_composition.jpg"
+               controls muted loop playsinline preload="none"></video>
+        <figcaption>
+          <strong>Compositional generalization.</strong> Arranging letter blocks to form the unseen word
+          &ldquo;BUS,&rdquo; conditioned on YUBI-VLM-generated primitive actions.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2>Conclusion</h2>
+      <p>
+        YUBI-STAG annotates bimanual demonstrations with contact-anchored spatio-temporal structure; YUBI-VLM does it directly on raw, wrist-only video, validated on unseen manipulations by YUBI-STAG-Bench. Post-training YUBI-pretrained VLAs on these annotations improves fine-grained manipulation, language following, and composition beyond the original coarse labels. Annotation errors still cap policy performance, so better annotation quality should lift both grounding and manipulation.
+      </p>
+    </section>
+  </main>
+  <footer>This page is anonymized for review.</footer>
+  <script>
+    (function () {
+      document.querySelectorAll('.carousel').forEach(function (root) {
+        var track = root.querySelector('.carousel-track');
+        var slides = [].slice.call(root.querySelectorAll('.carousel-slide'));
+        var dots = [].slice.call(root.querySelectorAll('.carousel-dots button'));
+        var taskEl = root.querySelector('.carousel-task');
+        var countEl = root.querySelector('.carousel-count');
+        var current = 0;
+
+        function sync(i) {
+          current = i;
+          slides.forEach(function (slide, k) {
+            var video = slide.querySelector('video');
+            if (video && k !== i) video.pause();
+          });
+          dots.forEach(function (dot, k) {
+            dot.classList.toggle('is-active', k === i);
+            dot.setAttribute('aria-current', k === i ? 'true' : 'false');
+          });
+          taskEl.textContent = slides[i].dataset.task;
+          countEl.textContent = (i + 1) + ' / ' + slides.length;
+        }
+
+        function go(i) {
+          var n = slides.length;
+          i = ((i % n) + n) % n;
+          track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+          sync(i);
+        }
+
+        root.querySelector('.prev').addEventListener('click', function () { go(current - 1); });
+        root.querySelector('.next').addEventListener('click', function () { go(current + 1); });
+        dots.forEach(function (dot, k) {
+          dot.addEventListener('click', function () { go(k); });
+        });
+
+        root.addEventListener('keydown', function (e) {
+          if (e.target.tagName === 'VIDEO') return;   // let the player keep its own arrow keys
+          if (e.key === 'ArrowLeft') { go(current - 1); e.preventDefault(); }
+          else if (e.key === 'ArrowRight') { go(current + 1); e.preventDefault(); }
+        });
+
+        var settle;
+        track.addEventListener('scroll', function () {   // keep swipes in sync
+          clearTimeout(settle);
+          settle = setTimeout(function () {
+            var i = Math.round(track.scrollLeft / track.clientWidth);
+            if (i !== current) sync(i);
+          }, 90);
+        }, { passive: true });
+
+        window.addEventListener('resize', function () {
+          track.scrollLeft = current * track.clientWidth;
+        });
+
+        sync(0);
+      });
+    })();
+  </script>
+</body>
+</html>
